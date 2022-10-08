@@ -86,6 +86,8 @@ Task_handle *argolib_fork(fork_t fptr, void *args) {
 
 
 // TODO_DOCUMENTATION
-void argolib_join(Task_handle *task) {
-    ABT_thread_free(task);
+void argolib_join(Task_handle **tasks, int size) {
+    for (int i = 0; i < size; ++i) {
+        ABT_thread_free(tasks[i]);
+    }
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "argolib.h"
 
 typedef struct {
@@ -24,7 +25,9 @@ void fib(void *arg) {
         /* Calculate fib(n - 2).  We do not create another ULT. */
         fib(&child2_arg);
 
-        argolib_join(task);
+        Task_handle **tasks = (Task_handle **) malloc(sizeof(Task_handle*));
+        tasks[0] = task;
+        argolib_join(tasks, 1);
 
         *p_ret = child1_arg.ret + child2_arg.ret;
     }

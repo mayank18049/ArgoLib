@@ -28,4 +28,4 @@ Task_handle* argolib_fork(fork_t fptr, void* args);
 * Used for joining one more ULTs using the corresponding task handles. In case of more than one
 * task handles, user can pass an array of Task_handle*. The parameter “size” is the array size.
 */
-void argolib_join(Task_handle *task);
+void argolib_join(Task_handle **task, int size);
