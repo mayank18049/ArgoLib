@@ -3,7 +3,7 @@
 CC = gcc
 MD = mkdir
 # DIRECTORIES
-INCLUDES = -I./include
+INCLUDES = -I./include -I$(ARGOBOTS_INSTALL_DIR)/include
 BUILDDIR = build
 SRC = ./src
 # CFLAGS
