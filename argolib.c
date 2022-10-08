@@ -66,7 +66,7 @@ void argolib_finalize() {
 
 // TODO_DOCUMENTATION
 void argolib_kernel(fork_t fptr, void *args) {
-    fptr(&args);
+    fptr(args);
 }
 
 // TODO_DOCUMENTATION

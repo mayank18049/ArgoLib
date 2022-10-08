@@ -34,11 +34,9 @@ void fib(void *arg) {
 int main(int argc, char **argv) {
     argolib_init(argc, argv);
 
-    int ret;
     fib_arg_t arg = {10, 0};
-    fib(&arg);
-    ret = arg.ret;
-    printf("fib(10) = %d\n", ret);
+    argolib_kernel(fib, &arg);
+    printf("fib(10) = %d\n", arg.ret);
 
     argolib_finalize();
 
