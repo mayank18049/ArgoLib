@@ -7,7 +7,6 @@ typedef struct {
     int ret;
 } fib_arg_t;
 
-typedef ABT_thread Task_handle;
 
 void fib(void *arg) {
     int n = ((fib_arg_t *) arg)->n;
