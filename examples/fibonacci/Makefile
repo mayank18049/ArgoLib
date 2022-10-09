@@ -8,7 +8,7 @@ LINKOBJ = -L$(ARGOLIB_INSTALL_DIR)/lib -L$(ARGOBOTS_INSTALL_DIR)/lib -largo -lab
 # RPATH = -Wl,-rpath=$(ARGOBOTS_INSTALL_DIR)/lib/libabt.so -Wl,-rpath=$(ARGOLIB_INSTALL_DIR)/lib/libargo.so
 # CFLAGS
 OPT = -O0 
-CFLAGS  = -fsanitize=address
+# CFLAGS  = -fsanitize=address
 # the build target executable
 TARGET = fibonacci
 
