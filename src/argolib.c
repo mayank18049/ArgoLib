@@ -6,7 +6,7 @@
 ABT_xstream *xstreams;
 ABT_pool *pools;
 ABT_sched *scheds;
-ABT_thread *top_thread;
+Task_handle *top_task;
 
 // TODO_DOCUMENTATION
 void argolib_init(int argc, char **argv){
@@ -18,7 +18,7 @@ void argolib_init(int argc, char **argv){
     ABT_init(argc, argv);
     
     for(i = 0;i<num_xstreams;i++){
-        ABT_pool_create_basic(ABT_POOL_RANDWS, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pools[i]);
+        ABT_pool_create_basic(ABT_POOL_RANDWS, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &(pools[i]));
     }
 
     for (i = 0; i < num_xstreams; i++) {
@@ -27,40 +27,40 @@ void argolib_init(int argc, char **argv){
             tmp[j] = pools[(i + j) % num_xstreams];
         }
         ABT_sched_create_basic(ABT_SCHED_RANDWS, num_xstreams, tmp,
-                               ABT_SCHED_CONFIG_NULL, &scheds[i]);
+                               ABT_SCHED_CONFIG_NULL, &(scheds[i]));
         free(tmp);
     }
-    ABT_xstream_self(&xstreams[0]);
+    ABT_xstream_self(&(xstreams[0]));
     ABT_xstream_set_main_sched(xstreams[0], scheds[0]);
     for (i = 1; i < num_xstreams; i++) {
-        ABT_xstream_create(scheds[i], &xstreams[i]);
+        ABT_xstream_create(scheds[i], &(xstreams[i]));
     }
 
 }
 // TODO_DOCUMENTATION
 void argolib_finalize(){
-    ABT_thread_join(top_thread);
-    ABT_thread_free(top_thread);
-    free(top_thread);
+    ABT_thread_join(*top_task);
+    ABT_thread_free(top_task);
+    free(top_task);
     ABT_finalize();
 }
 // TODO_DOCUMENTATION
 void argolib_kernel(fork_t fptr, void* args){
-    top_thread = (ABT_thread *)malloc(sizeof(ABT_thread));
+    top_task = (Task_handle *)malloc(sizeof(Task_handle));
     ABT_thread_create(pools[0], fptr, args,
-                          ABT_THREAD_ATTR_NULL, top_thread);
+                          ABT_THREAD_ATTR_NULL, top_task);
 }
 // TODO_DOCUMENTATION
 Task_handle* argolib_fork(fork_t fptr, void* args){
-    Task_handle * task;
-    task = (ABT_thread *)malloc(sizeof(ABT_thread));
+    Task_handle *task;
+    task = (Task_handle *)malloc(sizeof(Task_handle));
     ABT_thread_create(pools[0], fptr, args,
-                          ABT_THREAD_ATTR_NULL, task);
+                          ABT_THREAD_ATTR_NULL, top_task);
     return task;
 }
 // TODO_DOCUMENTATION
 void argolib_join(Task_handle** list, int size){
-    ABT_thread_join_many(list,size);
+    ABT_thread_join_many(size,*list);
     for(int i =0;i<size;i++){
         free(list[i]);
     }
