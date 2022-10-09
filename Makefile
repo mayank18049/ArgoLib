@@ -11,14 +11,14 @@ SRC = ./src
 # LIBS = -largolib -labt
 CFLAGS  = --shared -fpic
 # the build target executable
-TARGET = argolib
+TARGET = argo
 
 # RULES
-all: $(BUILDDIR)/$(TARGET).so
+all: $(BUILDDIR)/lib$(TARGET).so
 
-$(BUILDDIR)/$(TARGET).so:
+$(BUILDDIR)/lib$(TARGET).so:
 	mkdir -p $(BUILDDIR)	
-	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/$(TARGET).so $(SRC)/$(TARGET).c
+	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c
 
 .phony:
 clean:
