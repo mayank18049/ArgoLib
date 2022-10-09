@@ -2,6 +2,7 @@
 #define __ARGOLIB_HPP__
 #include "abt.h"
 #include "argolib.h"
+
 namespace argolib{
 typedef ABT_thread Task_handle;
 typedef void (*fork_t)(void* args);

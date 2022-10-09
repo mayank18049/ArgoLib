@@ -3,12 +3,14 @@ typedef struct {
     uint event_freq;
 } sched_data_t;
 
+extern pool_stat *stats;
+
 static int sched_init(ABT_sched sched, ABT_sched_config config) {
     sched_data_t *p_data = (sched_data_t *) calloc(1, sizeof(sched_data_t));
-
+    
     ABT_sched_config_read(config, 1, &p_data->event_freq);
     ABT_sched_set_data(sched, (void *) p_data);
-
+    
     return ABT_SUCCESS;
 }
 
@@ -20,10 +22,12 @@ static void sched_run(ABT_sched sched) {
     int target;
     ABT_bool stop;
     unsigned seed = time(NULL);
-
+    int rank;
+    ABT_xstream_self_rank(&rank);
     ABT_sched_get_data(sched, (void **) &p_data);
     ABT_sched_get_num_pools(sched, &num_pools);
     my_pools = (ABT_pool *) malloc(num_pools * sizeof(ABT_pool));
+    
     ABT_sched_get_pools(sched, num_pools, 0, my_pools);
 
     while (1) {
@@ -32,6 +36,7 @@ static void sched_run(ABT_sched sched) {
         ABT_pool_pop_thread(my_pools[0], &thread);
         if (thread != ABT_THREAD_NULL) {
             /* "thread" is associated with its original pool (my_pools[0]). */
+            stats[rank].pop+=1;
             ABT_self_schedule(thread, ABT_POOL_NULL);
         } else if (num_pools > 1) {
             /* Steal a work unit from other my_pools */
@@ -40,7 +45,9 @@ static void sched_run(ABT_sched sched) {
             if (thread != ABT_THREAD_NULL) {
                 /* "thread" is associated with its original pool
                  * (my_pools[target]). */
+                stats[rank].steal+=1;
                 ABT_self_schedule(thread, my_pools[target]);
+                
             }
         }
 
@@ -61,7 +68,6 @@ static int sched_free(ABT_sched sched) {
 
     ABT_sched_get_data(sched, (void **) &p_data);
     free(p_data);
-
     return ABT_SUCCESS;
 }
 
@@ -89,6 +95,7 @@ void create_scheds(int num, ABT_pool *pools,ABT_sched *scheds) {
         }
 
         ABT_sched_create(&sched_def, num, my_pools, config, &scheds[i]);
+        
     }
     free(my_pools);
 
@@ -162,6 +169,9 @@ static ABT_thread pool_pop(ABT_pool pool, ABT_pool_context context) {
 
 static void pool_push(ABT_pool pool, ABT_unit unit, ABT_pool_context context) {
     pool_t *p_pool;
+    int rank;
+    ABT_xstream_self_rank(&rank);
+    stats[rank].push +=1;
     ABT_pool_get_data(pool, (void **) &p_pool);
     unit_t *p_unit = (unit_t *) unit;
     pthread_mutex_lock(&p_pool->lock);
