@@ -19,7 +19,7 @@ void fib(void *arg) {
         fib_arg_t child2_arg = {n - 2, 0};
 
         /* Calculate fib(n - 1). */
-        Task_handle *task = argolib_fork(fib, &child1_arg);
+        Task_handle *task = argolib_fork(&fib, &child1_arg);
 
         /* Calculate fib(n - 2).  We do not create another ULT. */
         fib(&child2_arg);
@@ -27,8 +27,8 @@ void fib(void *arg) {
         Task_handle **tasks = (Task_handle **) malloc(sizeof(Task_handle*));
         tasks[0] = task;
         argolib_join(tasks, 1);
-
         *p_ret = child1_arg.ret + child2_arg.ret;
+        free(tasks);
     }
 }
 
@@ -37,9 +37,8 @@ int main(int argc, char **argv) {
     
 	argolib_init(argc, argv);
     fib_arg_t arg = {10, 0};
-    argolib_kernel(fib, &arg);
-    printf("fib(10) = %d\n", arg.ret);
+    argolib_kernel(&fib, &arg);
     argolib_finalize();
-
+    printf("fib(10) = %d\n", arg.ret);
     return 0;
 }
