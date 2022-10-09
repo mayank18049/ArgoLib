@@ -18,7 +18,7 @@ all: $(BUILDDIR)/lib$(TARGET).so
 
 $(BUILDDIR)/lib$(TARGET).so:
 	mkdir -p $(BUILDDIR)	
-	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c
+	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c $(SRC)/customscheduler.c
 
 .phony:
 clean:

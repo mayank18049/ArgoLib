@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "argolib.h"
-
+#include "customscheduler.h"
 // GLOBAL CONSTANTS
 #define DEFAULT_NUM_XSTREAMS 4
 
@@ -24,19 +24,10 @@ void argolib_init(int argc, char **argv) {
 
 
     /* Create pools. */
-    for (i = 0; i < num_xstreams; i++) {
-        ABT_pool_create_basic(ABT_POOL_FIFO, ABT_POOL_ACCESS_MPMC, ABT_TRUE, &pools[i]);
-    }
+    create_pools(num_xstreams,pools);
 
     /* Create schedulers. */
-    for (i = 0; i < num_xstreams; i++) {
-        ABT_pool *tmp = (ABT_pool *) malloc(sizeof(ABT_pool) * num_xstreams);
-        for (j = 0; j < num_xstreams; j++) {
-            tmp[j] = pools[(i + j) % num_xstreams];
-        }
-        ABT_sched_create_basic(ABT_SCHED_RANDWS, num_xstreams, tmp,ABT_SCHED_CONFIG_NULL, &scheds[i]);
-        free(tmp);
-    }
+    create_scheds(num_xstreams,pools,scheds);
 
     /* Set up a primary execution stream. */
     ABT_xstream_self(&xstreams[0]);
@@ -71,7 +62,6 @@ void argolib_kernel(fork_t fptr, void *args) {
 
 // TODO_DOCUMENTATION
 Task_handle *argolib_fork(fork_t fptr, void *args) {
-
     int rank;
     ABT_xstream_self_rank(&rank);
     ABT_pool target_pool = pools[rank];
