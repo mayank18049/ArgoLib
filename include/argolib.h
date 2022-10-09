@@ -1,6 +1,10 @@
 #ifndef __ARGOLIB_H__
 #define __ARGOLIB_H__
-#include <abt.h>
+#ifdef __cplusplus
+extern "C"{
+#endif 
+
+#include "abt.h"
 typedef ABT_thread Task_handle;
 typedef void (*fork_t)(void* args);
 /**
@@ -29,4 +33,8 @@ Task_handle* argolib_fork(fork_t fptr, void* args);
 * task handles, user can pass an array of Task_handle*. The parameter “size” is the array size.
 */
 void argolib_join(Task_handle** list, int size);
+
+#ifdef __cplusplus
+}
+#endif
 #endif
