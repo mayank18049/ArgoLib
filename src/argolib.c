@@ -2,7 +2,7 @@
 #include "argolib.h"
 #include "customscheduler.h"
 // GLOBAL CONSTANTS
-#define DEFAULT_NUM_XSTREAMS 2
+#define DEFAULT_NUM_XSTREAMS 13
 
 // GLOBAL DECLERATIONS
 ABT_xstream *xstreams;
