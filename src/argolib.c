@@ -1,8 +1,9 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "argolib.h"
 #include "customscheduler.h"
 // GLOBAL CONSTANTS
-#define DEFAULT_NUM_XSTREAMS 13
+#define DEFAULT_NUM_XSTREAMS 1
 
 // GLOBAL DECLERATIONS
 ABT_xstream *xstreams;
@@ -10,10 +11,29 @@ ABT_pool *pools;
 ABT_sched *scheds;
 pool_stat *stats;
 int *total_threads;
+int num_xstreams;
+
+static void init_num_streams(){
+    const char* num_workers = getenv("ARGOLIB_WORKERS"); 
+    if (num_workers == NULL){
+        printf("SET ENV VARIABLE ARGOLIB_WORKERS!!! USING DEFAULT WORKER NUMBER:%d\n",DEFAULT_NUM_XSTREAMS);
+        num_xstreams = DEFAULT_NUM_XSTREAMS;
+    }else{
+        int t = atoi(num_workers);
+        if(t > 0){
+            num_xstreams = t;
+        }else{
+            printf("SET ENV VARIABLE ARGOLIB_WORKERS PROPERLY!!! USING DEFAULT WORKER NUMBER:%d\n",DEFAULT_NUM_XSTREAMS);
+            num_xstreams = DEFAULT_NUM_XSTREAMS;
+        }
+    }
+
+}
 // TODO_DOCUMENTATION
+
 void argolib_init(int argc, char **argv) {
     int i, j;
-    int num_xstreams = DEFAULT_NUM_XSTREAMS;
+    init_num_streams();
     stats = (pool_stat*) malloc(num_xstreams*sizeof(pool_stat));
     total_threads = (int*)malloc(num_xstreams*sizeof(int));
     for (int i = 0;i<num_xstreams;i++){
@@ -28,7 +48,7 @@ void argolib_init(int argc, char **argv) {
     /* Allocate memory. */
     xstreams = (ABT_xstream *) malloc(sizeof(ABT_xstream) * num_xstreams);
     pools = (ABT_pool *) malloc(sizeof(ABT_pool) * num_xstreams);
-    scheds = (ABT_sched *) malloc(sizeof(ABT_sched) * num_xstreams);
+    scheds = (ABT_sched *) malloc(sizeof(ABT_sched) *num_xstreams);
 
     /* Initialize Argobots. */
     ABT_init(argc, argv);
@@ -57,7 +77,7 @@ void argolib_init(int argc, char **argv) {
 // TODO_DOCUMENTATION
 void argolib_finalize() {
     int i;
-    for (i = 1; i < DEFAULT_NUM_XSTREAMS; i++) {
+    for (i = 1; i < num_xstreams; i++) {
         ABT_xstream_join(xstreams[i]);
         ABT_xstream_free(&xstreams[i]);
     }
@@ -76,7 +96,7 @@ void argolib_kernel(fork_t fptr, void *args) {
     double t2 = ABT_get_wtime();
     int total_push =0;
     int all_threads =0;
-    for(int i=0;i<DEFAULT_NUM_XSTREAMS;i++){
+    for(int i=0;i<num_xstreams;i++){
         printf("Num pops:%d on stream:%d\n",(stats[i]).pop,i);
         printf("Num push:%d on stream:%d\n",(stats[i]).push,i);
         printf("Num steals:%d on stream:%d\n",(stats[i]).steal,i);

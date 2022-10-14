@@ -3,9 +3,10 @@
 CC = gcc
 MD = mkdir
 # DIRECTORIES
-INCLUDES = -I./include -I$(ARGOBOTS_INSTALL_DIR)/include
+INCLUDES = -I./include -I$(ARGOBOTS_INSTALL_DIR)/include -I./include/scheds
 BUILDDIR = ./lib
 SRC = ./src
+SCHED_SRC = $(SRC)/scheds
 # CFLAGS
 # OPT = -O3
 # LIBS = -largolib -labt
@@ -18,7 +19,7 @@ all: $(BUILDDIR)/lib$(TARGET).so
 
 $(BUILDDIR)/lib$(TARGET).so:
 	mkdir -p $(BUILDDIR)	
-	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c $(SRC)/customscheduler.c
+	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c $(SCHED_SRC)/private-sched.c
 
 .phony:
 clean:

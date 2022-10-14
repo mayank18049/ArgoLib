@@ -26,7 +26,7 @@ void finalize(){
 */
 template<typename T>
 void lambda_wrapper(void *arg) {
-    T *lambda = static_cast<T*>(arg);
+    T *lambda = static_cast<T* >(arg);
     (*lambda)(); // !!! May cause a worker-swap !!!
     delete lambda;
 }
@@ -46,7 +46,7 @@ Task_handle* fork(T &&lambda){
     return argolib_fork(lambda_wrapper<U>, new U(lambda));
 }
 template <typename... Ts>
-Task_handle **construct_future_list(Ts... handles) {
+Task_handle **construct_handles_list(Ts... handles) {
     const size_t n = sizeof...(handles); // parameter pack count
     return new Task_handle*[n+1] { handles..., nullptr };
 }
@@ -58,7 +58,7 @@ Task_handle **construct_future_list(Ts... handles) {
 template<typename... T>
 void join(T... handles){
     // TODO
-    Task_handle ** task_handles = construct_future_list(handles ...);
+    Task_handle ** task_handles = construct_handles_list(handles ...);
     int sz = 0;
     for(int i =0;;i++){
         if(task_handles[i] == nullptr){
@@ -67,7 +67,7 @@ void join(T... handles){
         sz +=1;
     }
     argolib_join(task_handles,sz);
-    delete task_handles;
+    // delete task_handles;
 
 }
 
