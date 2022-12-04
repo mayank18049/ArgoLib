@@ -13,9 +13,9 @@ int main(int argc, char **argv) {
     argolib::init(argc, argv);
     int result;
     argolib::kernel([&]() {
-        result = fib(35);
+        result = fib(10);
         });
-    std::cout <<"Fib(35) =" <<result<<std::endl;
+    std::cout <<"Fib(10) =" <<result<<std::endl;
     argolib::finalize();
     return 0;
 }
