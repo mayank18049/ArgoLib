@@ -19,7 +19,7 @@ all: $(BUILDDIR)/lib$(TARGET).so
 
 $(BUILDDIR)/lib$(TARGET).so:
 	mkdir -p $(BUILDDIR)	
-	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c $(SCHED_SRC)/custom-sched.c
+	$(CC) $(INCLUDES) $(CFLAGS) -o $(BUILDDIR)/lib$(TARGET).so $(SRC)/$(TARGET)lib.c $(SCHED_SRC)/customscheduler.c
 
 .phony:
 clean:
