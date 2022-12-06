@@ -17,7 +17,7 @@ TARGET = fibonacci
 all: $(TARGET).out
 
 $(TARGET).out:	
-	$(CC) $(INCLUDES) $(OPT) $(CFLAGS) $(RPATH) $(LINKLIB)  -o $(TARGET).out $(TARGET).cpp $(LINKLIB)
+	$(CC) $(INCLUDES) $(OPT) $(CFLAGS) $(RPATH) $(LINKLIB)  -o $(TARGET).out $(TARGET).cpp $(LINKOBJ)
 
 .phony:
 clean:
