@@ -39,7 +39,7 @@ static void sched_run(ABT_sched sched) {
         } else if (num_pools > 1) {
             /* Steal a work unit from other my_pools */
             target = (num_pools == 2) ? 1 : (rand_r(&seed) % (num_pools - 1) + 1);
-            ABT_pool_pop_thread(my_pools[target], &thread);
+            ABT_pool_pop_thread_ex(my_pools[target], &thread,ABT_POOL_CONTEXT_OWNER_SECONDARY);
             if (thread != ABT_THREAD_NULL) {
                 /* "thread" is associated with its original pool
                  * (my_pools[target]). */
