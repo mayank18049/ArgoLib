@@ -41,8 +41,8 @@ void argolib_init(int argc, char **argv) {
     int i, j;
     init_num_streams();
     counter = (bool *)malloc(num_xstreams*sizeof(bool));
-    conds = (pthread_cont_t *)malloc(num_xstreams*sizeof(pthread_cond_t));
-    sleep_locks = (pthread_mutex_t *)malloc(num_xstreams*sizeof(pthread_mutex_t));
+    conds = (pthread_cond_t *)malloc(num_xstreams*sizeof(pthread_cond_t));
+    sleeplocks = (pthread_mutex_t *)malloc(num_xstreams*sizeof(pthread_mutex_t));
     stats = (pool_stat*) malloc(num_xstreams*sizeof(pool_stat));
     total_threads = (int*)malloc(num_xstreams*sizeof(int));
 
