@@ -124,7 +124,6 @@ Task_handle *argolib_fork(fork_t fptr, void *args) {
     int rank;
     ABT_xstream_self_rank(&rank);
     while(counter[rank]){
-
     }
     ABT_pool target_pool = pools[rank];
     total_threads[rank] +=1;
@@ -145,8 +144,29 @@ void argolib_join(Task_handle **tasks, int size) {
 }
 
 void sleep_argolib_num_workers(int wchange){
-    
+    while (wchange != 0){
+        for(int i=0;i<num_xstreams;i++){
+            if(wchange > 0){
+                if(!counter[i]){
+                    counter[i] = true;
+                    wchange -=1;
+                }
+            }
+            
+        }
+    }
 }
+
 void awoke_argolib_num_workers(int wchange){
-    
+   while (wchange != 0){
+        for(int i=0;i<num_xstreams;i++){
+            if(wchange > 0){
+                if(counter[i]){
+                    counter[i] = false;
+                    wchange -=1;
+                }
+            }
+            
+        }
+    } 
 }
