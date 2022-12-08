@@ -15,7 +15,7 @@ pool_stat *stats;
 int *total_threads;
 int num_xstreams;
 bool * counter;
-
+pthread_cont_t * conds;
 
 
 static void init_num_streams(){
@@ -41,7 +41,7 @@ void argolib_init(int argc, char **argv) {
     int i, j;
     init_num_streams();
     counter = (bool *)malloc(num_xstreams*sizeof(bool));
-
+    conds = (pthread_cont_t *)malloc(num_xstreams*sizeof(pthread_cont_t));
     stats = (pool_stat*) malloc(num_xstreams*sizeof(pool_stat));
     total_threads = (int*)malloc(num_xstreams*sizeof(int));
     for (int i = 0;i<num_xstreams;i++){
@@ -51,6 +51,7 @@ void argolib_init(int argc, char **argv) {
         (stats[i]).total = 0;
         total_threads[i] = 0;
         counter[i] = false;
+        pthread_cond_init(&conds[i],NULL);
 
     }
 
@@ -96,6 +97,11 @@ void argolib_finalize() {
     free(xstreams);
     free(pools);
     free(scheds);
+    free(stats);
+    free(total_threads);
+    free(counter);
+    free(conds);
+    
 }
 
 // TODO_DOCUMENTATION
@@ -124,6 +130,7 @@ Task_handle *argolib_fork(fork_t fptr, void *args) {
     int rank;
     ABT_xstream_self_rank(&rank);
     while(counter[rank]){
+        pthread_cond_wait(&conds[rank],NULL);
     }
     ABT_pool target_pool = pools[rank];
     total_threads[rank] +=1;
@@ -164,6 +171,7 @@ void awoke_argolib_num_workers(int wchange){
                 if(counter[i]){
                     counter[i] = false;
                     wchange -=1;
+                    pthread_cond_signal(&conds[i]);
                 }
             }
             
