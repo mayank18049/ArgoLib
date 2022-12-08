@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "argolib.h"
 #include "customscheduler.h"
+#include "argoutils.h"
+
 // GLOBAL CONSTANTS
 #define DEFAULT_NUM_XSTREAMS 1
 
@@ -12,6 +14,9 @@ ABT_sched *scheds;
 pool_stat *stats;
 int *total_threads;
 int num_xstreams;
+bool * counter;
+
+
 
 static void init_num_streams(){
     const char* num_workers = getenv("ARGOLIB_WORKERS"); 
@@ -29,11 +34,14 @@ static void init_num_streams(){
     }
 
 }
+
 // TODO_DOCUMENTATION
 
 void argolib_init(int argc, char **argv) {
     int i, j;
     init_num_streams();
+    counter = (bool *)malloc(num_xstreams*sizeof(bool));
+
     stats = (pool_stat*) malloc(num_xstreams*sizeof(pool_stat));
     total_threads = (int*)malloc(num_xstreams*sizeof(int));
     for (int i = 0;i<num_xstreams;i++){
@@ -42,6 +50,7 @@ void argolib_init(int argc, char **argv) {
         (stats[i]).steal = 0;
         (stats[i]).total = 0;
         total_threads[i] = 0;
+        counter[i] = false;
 
     }
 
@@ -114,6 +123,9 @@ void argolib_kernel(fork_t fptr, void *args) {
 Task_handle *argolib_fork(fork_t fptr, void *args) {
     int rank;
     ABT_xstream_self_rank(&rank);
+    while(counter[rank]){
+
+    }
     ABT_pool target_pool = pools[rank];
     total_threads[rank] +=1;
     Task_handle task;
@@ -130,4 +142,11 @@ void argolib_join(Task_handle **tasks, int size) {
     for (int i = 0; i < size; ++i) {
         ABT_thread_free(tasks[i]);
     }
+}
+
+void sleep_argolib_num_workers(int wchange){
+    
+}
+void awoke_argolib_num_workers(int wchange){
+    
 }

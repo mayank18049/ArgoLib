@@ -1,9 +1,11 @@
-#ifndef __ARGOLIB_HPP__
-#define __ARGOLIB_HPP__
 #include "abt.h"
 #include "argolib.h"
+#include "argoutils.h"
+#include<thread>
+#include "sleep_daemon.hpp"
 #include <functional>
 #include <type_traits>
+
 
 namespace argolib{
 typedef ABT_thread Task_handle;
@@ -19,6 +21,7 @@ void init(int argc, char **argv){
 */
 void finalize(){
     argolib_finalize();
+
 }
 // TODO FIGURE OUT LAMBDAS
 /**
@@ -33,7 +36,10 @@ void lambda_wrapper(void *arg) {
 template<typename T>
 void kernel(T &&lambda){
     // TODO
+    std::thread ed(energy_daemon::start_daemon);
     argolib_kernel(lambda_wrapper<T>, new T(lambda));
+    energy_daemon::stop_daemon();
+    ed.join();
 }
 
 /**
@@ -44,6 +50,7 @@ Task_handle* fork(T &&lambda){
     // TODO
     typedef typename std::remove_reference<T>::type U;
     return argolib_fork(lambda_wrapper<U>, new U(lambda));
+    
 }
 template <typename... Ts>
 Task_handle **construct_handles_list(Ts... handles) {
@@ -72,4 +79,3 @@ void join(T... handles){
 }
 
 } //end namespace argolib
-#endif

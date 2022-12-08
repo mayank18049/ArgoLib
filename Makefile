@@ -3,14 +3,14 @@
 CC = gcc
 MD = mkdir
 # DIRECTORIES
-INCLUDES = -I./include -I$(ARGOBOTS_INSTALL_DIR)/include -I./include/scheds
+INCLUDES = -I./include -I$(ARGOBOTS_INSTALL_DIR)/include -I./include/scheds -I./include/utils
 BUILDDIR = ./lib
 SRC = ./src
 SCHED_SRC = $(SRC)/scheds
 # CFLAGS
 # OPT = -O3
 # LIBS = -largolib -labt
-CFLAGS  = --shared -fpic
+CFLAGS  = --shared -fpic 
 # the build target executable
 TARGET = argo
 

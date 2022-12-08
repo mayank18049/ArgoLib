@@ -1,10 +1,11 @@
-#ifndef __ARGOLIB_H__
-#define __ARGOLIB_H__
 #ifdef __cplusplus
 extern "C"{
 #endif 
 
 #include "abt.h"
+
+#include <stdbool.h>
+
 typedef ABT_thread Task_handle;
 typedef void (*fork_t)(void* args);
 /**
@@ -36,5 +37,4 @@ void argolib_join(Task_handle** list, int size);
 
 #ifdef __cplusplus
 }
-#endif
 #endif

@@ -2,7 +2,7 @@
 #include "cpucounters.h" //PCM related: https://github.com/intel/pcm
 #include "utils.h"       //PCM related: https://github.com/intel/pcm
 
-// #define millisleep(a) boost::this_fiber::sleep_for(std::chrono::milliseconds(a))
+#define millisleep(a) std::sleep_for(std::chrono::milliseconds(a))
 
 namespace energy_daemon{
   
@@ -47,22 +47,22 @@ void configureDOP(double prev, double curr){
   static actions lastAction = INC;
   const int wChange=2; // find experimentally on your system
   if(inital) {
-    // sleep_argolib_num_workers(wChange);
+    sleep_argolib_num_workers(wChange);
     lastAction=DEC;
     return;
     }
     if(curr - prev < 0) {
       if(lastAction==DEC) {
-        // sleep_argolib_num_workers(wChange);
+        sleep_argolib_num_workers(wChange);
         } else {
-          // awake_argolib_num_workers(wChange);
+          awake_argolib_num_workers(wChange);
         }
     } else{
       if(lastAction == DEC) {
-        // awake_argolib_num_workers(wChange);
+        awake_argolib_num_workers(wChange);
         lastAction = INC;
       } else {
-        // sleep_argolib_num_workers(wChange);
+        sleep_argolib_num_workers(wChange);
         lastAction = DEC;
       }
     }
@@ -78,7 +78,7 @@ void start_daemon(){
   
   SystemCounterState before, after;
   before = returnCounterState(); 
-  sleep(5);
+  millisleep(warmup_interval);
   double JPI_prev = 0;
   double JPI_curr = 0;
   while(!shutdown){
@@ -94,20 +94,5 @@ void start_daemon(){
 }
 void stop_daemon(){
   shutdown = true;
-}
-  
-
-}
-  
-void daemon_profiler() { // a dedicated pthread
-const int fixed_interval=100//some value that you find experimentally
-sleep(100); // warmup duration
-
-double JPI_prev=0; //JPI is Joules per Instructions Retired
-while(!shutdown) {
-double JPI_curr = read_hardware_performance_counters();
-configure_DOP(JPI_prev, JPI_curr);
-JPI_prev = JPI_curr;
-sleep(fixed_interval);
 }
 }
